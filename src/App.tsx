@@ -1,18 +1,11 @@
-import "./components/ListGroups.tsx";
-import ListGroup from "./components/ListGroups.tsx";
+import Alert from "./components/Alert";
 
 function App() {
-  const cities = ["shiraz", "tehran", "mashhad", "ahvaz", "karaj"];
-  const handleOnSelectItem = (item: string) => {
-    console.log(item);
-  };
   return (
     <div>
-      <ListGroup
-        items={cities}
-        heading="Cities"
-        onSelectItem={handleOnSelectItem}
-      />
+      <Alert>
+        Hello <i>World!</i>
+      </Alert>
     </div>
   );
 }
