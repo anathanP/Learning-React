@@ -1,20 +1,9 @@
-import { useState } from "react";
-import Alert from "./components/Alert";
-import Button from "./components/Button";
+import Like from "./components/Like";
 
 function App() {
-  const [display, setDisplay] = useState(false);
-  const handleOnClick = (state: boolean) => {
-    setDisplay(state);
-  };
   return (
     <div>
-      {display && (
-        <Alert onClose={() => handleOnClick(false)}>
-          Hello <b>World!</b>
-        </Alert>
-      )}
-      <Button onClickButton={() => handleOnClick(true)}>My Button</Button>
+      <Like onClick={(item: string) => console.log(item)} />
     </div>
   );
 }
