@@ -1,7 +1,7 @@
 interface Props {
   children: string;
   color?: "primary" | "secondary" | "danger" | "success";
-  onClickButton: () => void;
+  onClickButton?: () => void;
 }
 
 const Button = ({ children, onClickButton, color = "primary" }: Props) => {
@@ -9,7 +9,7 @@ const Button = ({ children, onClickButton, color = "primary" }: Props) => {
     <button
       type="button"
       className={`btn btn-${color}`}
-      onClick={onClickButton}
+      onClick={() => onClickButton && onClickButton()}
     >
       {children}
     </button>
