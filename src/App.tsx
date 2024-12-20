@@ -1,48 +1,83 @@
-import { useState } from "react";
-import ExpandableText from "./components/ExpandableText";
+import CommentServices, { CommentData } from "./services/CommentServices";
+import useUsers from "./hooks/useComments";
 
 function App() {
+  const { comments, setComments, error, setError, isLoading } = useUsers();
+
+  const deleteComment = (userComment: CommentData) => {
+    const originalComments = [...comments];
+    setComments(comments.filter((comment) => comment !== userComment));
+
+    CommentServices.delete(userComment.id).catch((err) => {
+      setError(err.message);
+      setComments(originalComments);
+    });
+  };
+
+  const createComment = () => {
+    const originalComments = comments;
+    const newComment: CommentData = {
+      id: 0,
+      name: "alireza",
+      body: ";fidsfjae;f;sdfjaeifjadjfas;d",
+    };
+    setComments([newComment, ...comments]);
+
+    CommentServices.create<CommentData>(newComment)
+      .then(({ data: savedUser }) => setComments([savedUser, ...comments]))
+      .catch((err) => {
+        setError(err.message);
+        setComments(originalComments);
+      });
+  };
+
+  const updateComment = (userComment: CommentData) => {
+    const originalComments = comments;
+    const updatedComment = { ...userComment, name: userComment.name + "!!!" };
+    setComments(
+      comments.map((comment) =>
+        comment.id === userComment.id ? updatedComment : comment
+      )
+    );
+
+    CommentServices.update<CommentData>(updatedComment).catch((err) => {
+      setError(err.message);
+      setComments(originalComments);
+    });
+  };
   return (
     <div>
-      <ExpandableText>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore dolorem
-        iusto nihil amet doloremque quae, ipsa quaerat vitae! Laudantium totam
-        amet ea reprehenderit voluptatem? Rem temporibus doloremque dolore
-        voluptates quaerat. Lorem ipsum dolor, sit amet consectetur adipisicing
-        elit. Voluptates similique doloremque iste eum, odio minus officiis id
-        repellat rerum, beatae, cupiditate vitae magnam quis fugit facere
-        perferendis placeat nam dolorem? Esse repellendus doloremque ratione,
-        quidem non nihil fuga explicabo delectus aliquid expedita aperiam cum
-        dolore accusamus, fugit, neque cupiditate impedit inventore nulla
-        deleniti natus culpa aspernatur architecto? Natus accusantium optio
-        dolorum neque tempora eveniet quis expedita et nobis beatae doloribus
-        magni, provident inventore nisi dolore quasi earum obcaecati, labore
-        ipsum dicta! Repellendus, eos, cupiditate hic voluptatibus ut,
-        voluptates possimus eum accusantium fuga quod voluptatum perspiciatis
-        quibusdam at iste in obcaecati? Odio perspiciatis recusandae aut illo,
-        maxime nam obcaecati officiis ad ea magnam, iusto molestiae fugiat
-        expedita, rerum aliquid quae exercitationem. Voluptas, officia
-        temporibus aut cumque praesentium ad necessitatibus blanditiis totam
-        porro. In delectus illum sit saepe rem aperiam culpa obcaecati autem
-        soluta deleniti repudiandae, pariatur, quaerat laborum voluptatibus?
-        Fugit nobis culpa cumque laudantium ratione dolor inventore cupiditate!
-        Nemo nisi maiores aliquam ipsa nostrum aperiam suscipit quibusdam
-        debitis consequuntur, saepe, architecto tempora soluta? Vel incidunt
-        omnis consequuntur suscipit eos quae autem ipsum quisquam facere rem
-        sequi tenetur, alias molestiae illum. Enim minima dolorum quia quam fuga
-        quisquam exercitationem consectetur quasi dolore laboriosam nam, unde ex
-        odit ad quis quo a vero obcaecati voluptatibus amet reiciendis eius? Aut
-        ad voluptatum, earum architecto doloremque accusantium dignissimos
-        libero? Eos veniam dicta dolores dignissimos obcaecati a excepturi,
-        sequi at, omnis fugiat mollitia velit maxime nulla perferendis magnam
-        veritatis porro eaque in temporibus! Alias autem accusantium molestias
-        doloremque sunt aliquam, consequatur tenetur! Cum veritatis dolorum,
-        suscipit modi repellat, repellendus exercitationem eaque molestias quod
-        quis omnis molestiae vitae consequuntur nostrum ipsam dolores dolorem,
-        eveniet doloribus. Est eum autem eos enim eius architecto id corporis
-        voluptates ducimus, nostrum deleniti necessitatibus labore voluptas modi
-        sapiente, nemo at vitae voluptatum.
-      </ExpandableText>
+      {isLoading && <div className="spinner-border"></div>}
+      {error && <p className="text-danger">{error}</p>}
+      <div className="mb-3">
+        <button className="btn btn-success" onClick={createComment}>
+          Add
+        </button>
+      </div>
+      <ul className="list-group">
+        {comments.map((comment) => (
+          <li
+            key={comment.id}
+            className="list-group-item d-flex justify-content-between"
+          >
+            {comment.name}{" "}
+            <div>
+              <button
+                className="btn btn-secondary"
+                onClick={() => updateComment(comment)}
+              >
+                Update
+              </button>
+              <button
+                className="btn btn-danger"
+                onClick={() => deleteComment(comment)}
+              >
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
